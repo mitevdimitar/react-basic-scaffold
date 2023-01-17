@@ -1,0 +1,3 @@
+export const ACTIONS = {
+    START_LOADING: "START_LOADING"
+}
