@@ -6,7 +6,7 @@ const initialState: AuthState = {
   loading: false,
   authenticated: false,
   error: "",
-  email: ""
+  user: ""
 };
 
 const AuthContext = createContext<ContextProps>({

@@ -1,5 +1,5 @@
 export const userLogin = async (username: string, password: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<{user: string}>((resolve, reject) => {
     if (username === 'test@test.com' && password === '1234') {
       resolve({user: 'test@test.com'});
     }

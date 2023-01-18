@@ -1,8 +1,10 @@
+import React from 'react';
 import { Grid, TextField, Typography, Box, Button, CircularProgress } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useContext } from 'react';
-import { ACTIONS } from '../state/constants';
+import { useContext, useState } from 'react';
 import AuthContext from '../state/contexts/AuthContext';
+import { userLogin } from '../services/auth';
+import { ActionTypes } from '../state/types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,11 +26,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Login() {
     const classes = useStyles();
+    const [email, setEmail] = useState("");
+    const [pass, setPass] = useState("");
     const { state, dispatch } = useContext(AuthContext);
     const { loading, error } = state;
 
-    const handleSubmit = () => {
-        dispatch({ type: ACTIONS.START_LOADING });
+    const handleSubmit = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        dispatch({ type: ActionTypes.StartLogin });
+        try {
+            const response = await userLogin(email, pass);
+            dispatch({ type: ActionTypes.Success, payload: {user: response.user } });
+        } catch (err) {
+            let myError = err as Error;
+            dispatch({ type: ActionTypes.Failure, payload: {error: myError.message} });
+        }
     }
 
     return (
@@ -40,7 +52,7 @@ function Login() {
                     <Typography component="h1" variant="h5">
                         Log in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} >
+                    <Box component="form" onSubmit={handleSubmit}>
                         <TextField
                             margin="normal"
                             required
@@ -50,6 +62,8 @@ function Login() {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                         />
                         <TextField
                             margin="normal"
@@ -60,6 +74,8 @@ function Login() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            value={pass}
+                            onChange={e => setPass(e.target.value)}
                         />
                         <Button
                             type="submit"
